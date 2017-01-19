@@ -8,8 +8,6 @@ import requesocks
 import socks
 import socket
 
-socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9150)
-socket.socket = socks.socksocket
 
 from .exceptions import VkAuthError, VkAPIError
 from .utils import raw_input, get_url_query, get_form_action, stringify_values, json_iter_parse
@@ -18,6 +16,11 @@ logger = logging.getLogger('vk')
 
 
 class Session(object):
+
+    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9150)
+    socket.socket = socks.socksocket
+    print (requests.get('http://icanhazip.com')).content
+    
     LOGIN_URL = 'https://m.vk.com'
     AUTHORIZE_URL = 'https://oauth.vk.com/authorize'
 

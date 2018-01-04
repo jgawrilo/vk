@@ -31,6 +31,10 @@ class Session(object):
     def __init__(self, user_login='', user_password='', app_id='', scope='offline', access_token='', timeout=10,
                  **method_default_args):
 
+        socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9050)
+        socket.socket = socks.socksocket
+        print (requests.get('http://icanhazip.com')).content
+        
         self.user_login = user_login
         self.user_password = user_password
         self.app_id = app_id

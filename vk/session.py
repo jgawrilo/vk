@@ -17,10 +17,6 @@ logger = logging.getLogger('vk')
 
 class Session(object):
 
-    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9050)
-    socket.socket = socks.socksocket
-    print (requests.get('http://icanhazip.com')).content
-    
     LOGIN_URL = 'https://m.vk.com'
     AUTHORIZE_URL = 'https://oauth.vk.com/authorize'
 

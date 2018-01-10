@@ -4,10 +4,6 @@ import logging
 
 import requests
 
-import requesocks
-import socks
-import socket
-
 
 from .exceptions import VkAuthError, VkAPIError
 from .utils import raw_input, get_url_query, get_form_action, stringify_values, json_iter_parse
@@ -26,25 +22,41 @@ class Session(object):
 
     def __init__(self, user_login='', user_password='', app_id='', scope='offline', access_token='', timeout=10, use_tor=False,
                  **method_default_args):
-        if use_tor:
-            socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9050)
-            socket.socket = socks.socksocket
+        #if use_tor:
+        #    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9050)
+        #    socket.socket = socks.socksocket
             #print (requests.get('http://icanhazip.com')).content
         
         self.user_login = user_login
         self.user_password = user_password
         self.app_id = app_id
         self.scope = scope
+        self.use_tor=use_tor
 
         self.access_token = access_token
         self.timeout = timeout
         self.method_default_args = method_default_args
 
-        self.auth_session = requests.Session()
+        if self.use_tor:
+            self.auth_session = self.get_tor_session()
+        else:
+            self.auth_session = requests.Session()
         # self.requests_session = LoggingSession()
-        self.requests_session = requests.Session()
+        if self.use_tor:
+            self.requests_session = self.get_tor_session()
+            logger.info('Using Tor: ' + self.requests_session.get("http://httpbin.org/ip").text)
+        else:
+            self.requests_session = requests.Session()
+            logger.info('Not Using Tor: ' + self.requests_session.get("http://httpbin.org/ip").text)
         self.requests_session.headers['Accept'] = 'application/json'
         self.requests_session.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+
+    def get_tor_session(self):
+        session = requests.session()
+        # Tor uses the 9050 port as the default socks port
+        session.proxies = {'http':  'socks5://127.0.0.1:9050',
+                       'https': 'socks5://127.0.0.1:9050'}
+        return session
 
     def get_access_token(self):
         self.login()

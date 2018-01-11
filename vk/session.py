@@ -4,7 +4,7 @@ import logging
 
 import requests
 
-
+import json
 from .exceptions import VkAuthError, VkAPIError
 from .utils import raw_input, get_url_query, get_form_action, stringify_values, json_iter_parse
 
@@ -44,10 +44,10 @@ class Session(object):
         # self.requests_session = LoggingSession()
         if self.use_tor:
             self.requests_session = self.get_tor_session()
-            logger.info('Using Tor: ' + self.requests_session.get("http://httpbin.org/ip").text)
+            logger.info('VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
         else:
             self.requests_session = requests.Session()
-            logger.info('Not Using Tor: ' + self.requests_session.get("http://httpbin.org/ip").text)
+            logger.info('VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
         self.requests_session.headers['Accept'] = 'application/json'
         self.requests_session.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 

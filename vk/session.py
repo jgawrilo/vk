@@ -42,12 +42,15 @@ class Session(object):
         else:
             self.auth_session = requests.Session()
         # self.requests_session = LoggingSession()
-        if self.use_tor:
-            self.requests_session = self.get_tor_session()
-            logger.info('VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
-        else:
-            self.requests_session = requests.Session()
-            logger.info('VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+        try:
+            if self.use_tor:
+                self.requests_session = self.get_tor_session()
+                logger.info('VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+            else:
+                self.requests_session = requests.Session()
+                logger.info('VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+        except:
+            pass
         self.requests_session.headers['Accept'] = 'application/json'
         self.requests_session.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 

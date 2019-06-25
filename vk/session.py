@@ -20,7 +20,7 @@ class Session(object):
 
     CAPTCHA_URI = 'https://m.vk.com/captcha.php'
 
-    def __init__(self, user_login='', user_password='', app_id='', scope='offline', access_token='', timeout=10, use_tor=False,
+    def __init__(self, user_login='', user_password='', app_id='', scope='offline', access_token='', timeout=10, use_tor=False, tor_port=8110,
                  **method_default_args):
         #if use_tor:
         #    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", 9050)
@@ -32,6 +32,7 @@ class Session(object):
         self.app_id = app_id
         self.scope = scope
         self.use_tor=use_tor
+        self.tor_port=tor_port
 
         self.access_token = access_token
         self.timeout = timeout
@@ -45,10 +46,12 @@ class Session(object):
         try:
             if self.use_tor:
                 self.requests_session = self.get_tor_session()
-                logger.info('VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+                #logger.info('VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+                #print 'VK using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"]
             else:
                 self.requests_session = requests.Session()
-                logger.info('VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+                #logger.info('VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"])
+                #print 'VK not using Tor: ' + json.loads(self.requests_session.get("http://httpbin.org/ip").text)["origin"]
         except:
             pass
         self.requests_session.headers['Accept'] = 'application/json'
@@ -57,8 +60,8 @@ class Session(object):
     def get_tor_session(self):
         session = requests.session()
         # Tor uses the 9050 port as the default socks port
-        session.proxies = {'http':  'socks5://127.0.0.1:9050',
-                       'https': 'socks5://127.0.0.1:9050'}
+        session.proxies = {'http':  'http://127.0.0.1:' + str(self.tor_port),
+                       'https': 'http://127.0.0.1:' + str(self.tor_port)}
         return session
 
     def get_access_token(self):
